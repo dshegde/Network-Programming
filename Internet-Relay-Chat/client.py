@@ -12,7 +12,8 @@ threads = []
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((nwConnection['HOST'], int(nwConnection['PORT'])))
 
-# this function is to recieve and send message from the server
+
+'''This function is to recieve and send messages from the server'''
 
 
 def receive():

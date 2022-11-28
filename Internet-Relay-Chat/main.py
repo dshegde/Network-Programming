@@ -17,8 +17,7 @@ HOST = nwConnection['HOST']  # localhost
 PORT = int(nwConnection['PORT'])  # use any available port less than 65535
 
 # starting the server
-# AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections
-# AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections
+'''AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections'''
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))  # server is binding
 server.listen()  # now its in listening mode
@@ -35,7 +34,7 @@ instructions = '\nApplication Menu:\n' \
                '8.exit (exits the client app)\n'
 
 
-# now create a empty list and dict for data storage
+# Create an empty list and dictionary for data storage
 clients = []
 nicknames = []
 roomdetails = {}

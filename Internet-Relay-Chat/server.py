@@ -1,8 +1,10 @@
-#This python file contains all the functionalities
+# This python file contains all the functionalities
 
 from main import *
 
-#this function is to instatiate by creating objects
+# this function is to instatiate by creating objects
+
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -17,8 +19,9 @@ class Room:
         self.name = name
 
 
+'''This function is to list the available room details'''
 
-#this function is to list the available room details
+
 def list_all_roomdetails(nickname):
     name = users[nickname]
     print(len(roomdetails))
@@ -33,12 +36,15 @@ def list_all_roomdetails(nickname):
             name.send(f'{roomdetails[room].name}\n'.encode('utf-8'))
 
 
-#this function is to create new rooms
+'''This function is to create new rooms'''
+
+
 def create_room(nickname, room_name):
     name = users[nickname]
     user = users_in_room[nickname]
     if not room_name:
-        name.send('Enter a roomname! you have not entered a roomname\n'.encode('utf-8'))
+        name.send(
+            'Enter a roomname! you have not entered a roomname\n'.encode('utf-8'))
     elif room_name not in roomdetails:
         room = Room(room_name)
         roomdetails[room_name] = room
@@ -50,10 +56,13 @@ def create_room(nickname, room_name):
     else:
         #room = roomdetails[room_name]
         if room_name in user.roomdetails:
-            name.send('Room with the same name already exists, please choose another name for the room\n'.encode('utf-8'))
+            name.send(
+                'Room with the same name already exists, please choose another name for the room\n'.encode('utf-8'))
 
 
-#this function is to join to other rooms
+'''This function is to join to other rooms'''
+
+
 def join_room(nickname, room_name):
     name = users[nickname]
     user = users_in_room[nickname]
@@ -74,7 +83,9 @@ def join_room(nickname, room_name):
             #name.send('Joined room'.encode('utf-8'))
 
 
-#this function is to personally send messages
+'''This function is to personally send messages'''
+
+
 def personalMessage(message):
     args = message.split(" ")
     user = args[2]
@@ -89,21 +100,27 @@ def personalMessage(message):
         sender.send(f'[personal message] {args[0]}: {msg}'.encode('utf-8'))
 
 
+'''This function is to switch to other room'''
 
-#this function is to switch to other room
+
 def switch_room(nickname, roomname):
     user = users_in_room[nickname]
     name = users[nickname]
     room = roomdetails[roomname]
     if roomname == user.thisRoom:
-        name.send('You are already in the room, choose another available room to change\n'.encode('utf-8'))
+        name.send(
+            'You are already in the room, choose another available room to change\n'.encode('utf-8'))
     elif room not in user.roomdetails:
-        name.send('Change of room not available, you are not part of the room\n'.encode('utf-8'))
+        name.send(
+            'Change of room not available, you are not part of the room\n'.encode('utf-8'))
     else:
         user.thisRoom = roomname
         name.send(f'Switched to {roomname}\n'.encode('utf-8'))
 
-#this function is to leave the room
+
+'''This function is to leave the room'''
+
+
 def leave_room(nickname):
     user = users_in_room[nickname]
     name = users[nickname]
@@ -120,8 +137,9 @@ def leave_room(nickname):
         name.send('You left the room\n'.encode('utf-8'))
 
 
+'''This function is to exit the server/application'''
 
-#this function is to exit the server/application
+
 def remove_client(nickname):
     nicknames.remove(nickname)
     client = users[nickname]
@@ -136,9 +154,9 @@ def remove_client(nickname):
         broadcast(f'{nickname} left the room\n', room.name)
 
 
-#to handle
+# to handle
 def handle(client):
-    nick=''
+    nick = ''
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -168,9 +186,10 @@ def handle(client):
                     name.send('You are not part of any room\n'.encode('utf-8'))
                 else:
                     msg = ' '.join(args[1:])
-                    broadcast(f'{args[0]}: {msg}',users_in_room[args[0]].thisRoom)
+                    broadcast(f'{args[0]}: {msg}',
+                              users_in_room[args[0]].thisRoom)
 
-            #broadcast(message)
+            # broadcast(message)
         except Exception as e:
             print("exception occured ", e)
             index = clients.index(client)
@@ -196,7 +215,9 @@ def handle(client):
 
             break
 
-#main
+# main
+
+
 def recieve():
     while True:
         client, address = server.accept()
@@ -215,6 +236,7 @@ def recieve():
         client.send(instructions.encode('utf-8'))
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
+
 
 print('Server is listening...')
 recieve()
