@@ -1,14 +1,20 @@
-import threading #for multiple process
+import threading  # for multiple process
 import socket
 import sys
+import configparser
 
+configObj = configparser.ConfigParser()
+configObj.read('app_config_file.ini')
+nwConnection = configObj['Network Connection']
 nickname = input("Enter your nickname: ")
 threads = []
-#To start the connection
+# To start the connection
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('127.0.0.1', 65000))
+client.connect((nwConnection['HOST'], int(nwConnection['PORT'])))
 
-#this function is to recieve and send message from the server
+# this function is to recieve and send message from the server
+
+
 def receive():
     while True:
         try:
@@ -24,6 +30,7 @@ def receive():
             client.close()
             sys.exit(2)
 
+
 def write():
     while True:
         message = '{} {}'.format(nickname, input(''))
@@ -31,6 +38,7 @@ def write():
             client.send(message.encode('utf-8'))
         except:
             sys.exit(0)
+
 
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()

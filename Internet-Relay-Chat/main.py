@@ -4,20 +4,24 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 
-#This module contains the socket connection
+# This module contains the socket connection
 import socket
-import threading #for multiple process
+import threading  # for multiple process
+import configparser
 
 
-host = '127.0.0.1' #localhost
-port = 65000  #use any available port less than 65535
+configObj = configparser.ConfigParser()
+configObj.read('app_config_file.ini')
+nwConnection = configObj['Network Connection']
+HOST = nwConnection['HOST']  # localhost
+PORT = int(nwConnection['PORT'])  # use any available port less than 65535
 
-#starting the server
-#AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections
-#AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections
+# starting the server
+# AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections
+# AF_INET is for the type of addresses that makes connection (Internet) and SOCK_STREAM is for tcp connections
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((host, port)) #server is binding
-server.listen() #now its in listening mode
+server.bind((HOST, PORT))  # server is binding
+server.listen()  # now its in listening mode
 
 
 instructions = '\nApplication Menu:\n' \
@@ -31,14 +35,16 @@ instructions = '\nApplication Menu:\n' \
                '8.exit (exits the client app)\n'
 
 
-#now create a empty list and dict for data storage
+# now create a empty list and dict for data storage
 clients = []
 nicknames = []
 roomdetails = {}
 users = {}
 users_in_room = {}
 
-#to broadcast the message
+# to broadcast the message
+
+
 def broadcast(message, roomname):
     for client in roomdetails[roomname].peoples:
         msg = '['+roomname+'] '+message
