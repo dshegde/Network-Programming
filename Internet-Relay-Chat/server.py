@@ -1,6 +1,7 @@
 # This python file contains all the functionalities
 
 from main import *
+from helper import *
 
 # this function is to instatiate by creating objects
 
@@ -68,7 +69,8 @@ def join_room(nickname, room_name):
     user = users_in_room[nickname]
     print(len(roomdetails))
     if len(roomdetails) == 0:
-        name.send('No rooms are available to join\n'.encode('utf-8'))
+        name.send(
+            'No rooms are available to join. Create a room first!\n'.encode('utf-8'))
     else:
         room = roomdetails[room_name]
         if room_name in user.roomdetails:
@@ -79,8 +81,6 @@ def join_room(nickname, room_name):
             user.thisRoom = room_name
             user.roomdetails.append(room)
             broadcast(f'{nickname} joined the room', room_name)
-            broadcast(f', {nickname} Welcome to the room', room_name)
-            #name.send('Joined room'.encode('utf-8'))
 
 
 '''This function is to personally send messages'''
@@ -154,65 +154,54 @@ def remove_client(nickname):
         broadcast(f'{nickname} left the room\n', room.name)
 
 
-# to handle
+'''This function handles the client when it connects to the server like recv/send messages'''
+
+
 def handle(client):
-    nick = ''
+    nickname = ''
     while True:
         try:
-            message = client.recv(1024).decode('utf-8')
+            message = client.recv(Helper.BUFFER_SIZE).decode('utf-8')
+            print("Message is!!!!!!")
+            print(message)
             args = message.split(" ")
             name = users[args[0]]
-            nick = args[0]
+            nickname = args[0]
             if 'menu' in message:
                 name.send(instructions.encode('utf-8'))
             elif 'list' in message:
                 list_all_roomdetails(args[0])
             elif 'create' in message:
-                create_room(args[0], ' '.join(args[2:]))
+                create_room(nickname, ' '.join(args[2:]))
             elif 'join' in message:
-                join_room(args[0], ' '.join(args[2:]))
+                join_room(nickname, ' '.join(args[2:]))
             elif 'leave' in message:
-                leave_room(args[0])
+                leave_room(nickname)
             elif 'switch' in message:
-                switch_room(args[0], args[2])
+                switch_room(nickname, args[2])
             elif 'personal' in message:
                 personalMessage(message)
             elif 'exit' in message:
-                remove_client(args[0])
+                remove_client(nickname)
                 name.send('EXIT'.encode('utf-8'))
-                name.close()
+                print(client.recv(Helper.BUFFER_SIZE).decode('utf-8'))
+                # name.close()
             else:
-                if users_in_room[args[0]].thisRoom == '':
+                if users_in_room[nickname].thisRoom == '':
                     name.send('You are not part of any room\n'.encode('utf-8'))
                 else:
                     msg = ' '.join(args[1:])
-                    broadcast(f'{args[0]}: {msg}',
-                              users_in_room[args[0]].thisRoom)
+                    broadcast(f'{nickname}: {msg}',
+                              users_in_room[nickname].thisRoom)
 
-            # broadcast(message)
         except Exception as e:
-            print("exception occured ", e)
-            index = clients.index(client)
             clients.remove(client)
             client.close()
-            '''nickname = nicknames[index]
-            print(f'{nickname} left')
-            user = users_in_room[nickname]'''
-            '''if user.thisRoom != '':
-                roomname = user.thisRoom
-                user.thisRoom = ''
-                #user.roomdetails.remove(roomname)
-                roomdetails[roomname].peoples.remove(name)
-                roomdetails[roomname].nicknames.remove(nickname)
-                broadcast(f'{nickname} left the room', roomname)'''
-            print(f'nick name is {nick}')
-            if nick in nicknames:
-                remove_client(nick)
-            if nick in nicknames:
-                nicknames.remove(nick)
-
-            #broadcast(f'{nickname} left the room'.encode('utf-8'))
-
+            print(f'Client - {nickname} left')
+            if nickname in nicknames:
+                remove_client(nickname)
+            # if nick in nicknames:
+            #     nicknames.remove(nick)
             break
 
 # main
@@ -223,15 +212,14 @@ def recieve():
         client, address = server.accept()
         print(f'connected with {str(address)}\n')
         print(client)
-        client.send('NICK'.encode('utf-8'))
-        nickname = client.recv(1024).decode('utf-8')
+        client.send(Helper.NICKNAME_CODE.encode('utf-8'))
+        nickname = client.recv(Helper.BUFFER_SIZE).decode('utf-8')
         nicknames.append(nickname)
         clients.append(client)
         user = User(nickname)
         users_in_room[nickname] = user
         users[nickname] = client
         print(f'Nickname of the client is {nickname}\n')
-        #broadcast(f'{nickname} joined the chat'.encode('utf-8'))
         client.send('\nYAY! Connected to the server!\n'.encode('utf-8'))
         client.send(instructions.encode('utf-8'))
         thread = threading.Thread(target=handle, args=(client,))

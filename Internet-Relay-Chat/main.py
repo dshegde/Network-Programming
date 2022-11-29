@@ -13,7 +13,8 @@ import configparser
 configObj = configparser.ConfigParser()
 configObj.read('app_config_file.ini')
 nwConnection = configObj['Network Connection']
-HOST = nwConnection['HOST']  # localhost
+# IP address of the server, in this case it is the localhost
+HOST = nwConnection['HOST']
 PORT = int(nwConnection['PORT'])  # use any available port less than 65535
 
 # starting the server

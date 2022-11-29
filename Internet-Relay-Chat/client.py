@@ -2,6 +2,7 @@ import threading  # for multiple process
 import socket
 import sys
 import configparser
+from helper import *
 
 configObj = configparser.ConfigParser()
 configObj.read('app_config_file.ini')
@@ -19,17 +20,20 @@ client.connect((nwConnection['HOST'], int(nwConnection['PORT'])))
 def receive():
     while True:
         try:
-            message = client.recv(1024).decode('utf-8')
-            if message == 'NICK':
+            message = client.recv(Helper.BUFFER_SIZE).decode('utf-8')
+            if message == Helper.NICKNAME_CODE:
                 client.send(nickname.encode('utf-8'))
-            elif message == 'EXIT':
-                sys.exit(2)
+            elif message == Helper.EXIT_CODE:
+                print('Are you sure you want to exit chat application?')
+                client.send('Client is exiting'.encode('utf-8'))
+                client.close()
+                sys.exit()
             else:
                 print(message)
         except Exception as e:
             print('Server not responding')
             client.close()
-            sys.exit(2)
+            sys.exit()
 
 
 def write():
