@@ -25,6 +25,8 @@ class Room:
 
 def list_all_roomdetails(nickname):
     name = users[nickname]
+    print("inside list all rooms")
+    print(name)
     print(len(roomdetails))
     if len(roomdetails) == 0:
         name.send('No rooms available\n'.encode('utf-8'))
@@ -168,7 +170,7 @@ def handle(client):
             name = users[args[0]]
             nickname = args[0]
             if 'menu' in message:
-                name.send(instructions.encode('utf-8'))
+                name.send(Helper.MENU_LIST.encode('utf-8'))
             elif 'list' in message:
                 list_all_roomdetails(args[0])
             elif 'create' in message:
@@ -221,7 +223,7 @@ def recieve():
         users[nickname] = client
         print(f'Nickname of the client is {nickname}\n')
         client.send('\nYAY! Connected to the server!\n'.encode('utf-8'))
-        client.send(instructions.encode('utf-8'))
+        client.send(Helper.MENU_LIST.encode('utf-8'))
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
 
