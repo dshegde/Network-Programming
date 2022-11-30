@@ -11,7 +11,8 @@ nickname = input("Enter your nickname: ")
 threads = []
 # To start the connection
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((nwConnection['HOST'], int(nwConnection['PORT'])))
+# connect_ex does not raise an exception, instead it returns an error code
+client.connect_ex((nwConnection['HOST'], int(nwConnection['PORT'])))
 
 
 '''This function is to recieve and send messages from the server'''
@@ -20,12 +21,18 @@ client.connect((nwConnection['HOST'], int(nwConnection['PORT'])))
 def receive():
     while True:
         try:
-            message = client.recv(Helper.BUFFER_SIZE).decode('utf-8')
-            if message == Helper.NICKNAME_CODE:
+            message = client.recv(Constants.BUFFER_SIZE).decode('utf-8')
+            if not message:
+                print("Connection to the server is lost. Exiting!!")
+                client.shutdown(socket.SHUT_RDWR)
+                client.close()
+                sys.exit()
+            elif message == Constants.NICKNAME_CODE:
                 client.send(nickname.encode('utf-8'))
-            elif message == Helper.EXIT_CODE:
+            elif message == Constants.EXIT_CODE:
                 print('Are you sure you want to exit chat application?')
                 client.send('Client is exiting'.encode('utf-8'))
+                client.shutdown(socket.SHUT_RDWR)
                 client.close()
                 sys.exit()
             else:

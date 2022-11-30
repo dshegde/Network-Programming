@@ -26,17 +26,15 @@ class Room:
 
 def list_all_roomdetails(nickname):
     name = users[nickname]
-    print("inside list all rooms")
-    print(name)
-    print(len(roomdetails))
+    # print("inside list all rooms")
+    # print(name)
+    # print(len(roomdetails))
     if len(roomdetails) == 0:
         name.send('No rooms available\n'.encode('utf-8'))
     else:
         reply = "List of available roomdetails: \n"
         name.send(f'{reply}'.encode('utf-8'))
         for room in roomdetails:
-            print(roomdetails[room].name)
-            print(roomdetails[room].nicknames)
             name.send(f'{roomdetails[room].name}\n'.encode('utf-8'))
 
 
@@ -50,12 +48,12 @@ def create_room(nickname, room_name):
         name.send(
             'Enter a roomname! you have not entered a roomname\n'.encode('utf-8'))
     elif room_name not in roomdetails:
-        room = Room(room_name)
-        roomdetails[room_name] = room
-        room.peoples.append(name)
-        room.nicknames.append(nickname)
+        room_obj = Room(room_name)
+        roomdetails[room_name] = room_obj
+        room_obj.peoples.append(name)
+        room_obj.nicknames.append(nickname)
         user.thisRoom = room_name
-        user.roomdetails.append(room)
+        user.roomdetails.append(room_obj)
         name.send(f'{room_name} created\n'.encode('utf-8'))
     else:
         #room = roomdetails[room_name]
@@ -89,7 +87,7 @@ def join_room(nickname, room_name):
 '''This function is to personally send messages'''
 
 
-def personalMessage(message):
+def personal_message(message):
     args = message.split(" ")
     user = args[2]
     sender = users[args[0]]
@@ -126,7 +124,11 @@ def switch_room(nickname, roomname):
 
 def leave_room(nickname):
     user = users_in_room[nickname]
+    print("inside leave_room")
+    print(user)
+    print("--------")
     name = users[nickname]
+    print(name)
     if user.thisRoom == '':
         name.send('You are not part of any room\n'.encode('utf-8'))
     else:
@@ -164,14 +166,14 @@ def handle(client):
     nickname = ''
     while True:
         try:
-            message = client.recv(Helper.BUFFER_SIZE).decode('utf-8')
+            message = client.recv(Constants.BUFFER_SIZE).decode('utf-8')
             print("Message is!!!!!!")
             print(message)
             args = message.split(" ")
             name = users[args[0]]
             nickname = args[0]
             if 'menu' in message:
-                name.send(Helper.MENU_LIST.encode('utf-8'))
+                name.send(Constants.MENU_LIST.encode('utf-8'))
             elif 'list' in message:
                 list_all_roomdetails(args[0])
             elif 'create' in message:
@@ -183,11 +185,11 @@ def handle(client):
             elif 'switch' in message:
                 switch_room(nickname, args[2])
             elif 'personal' in message:
-                personalMessage(message)
+                personal_message(message)
             elif 'exit' in message:
                 remove_client(nickname)
                 name.send('EXIT'.encode('utf-8'))
-                print(client.recv(Helper.BUFFER_SIZE).decode('utf-8'))
+                print(client.recv(Constants.BUFFER_SIZE).decode('utf-8'))
                 # name.close()
             else:
                 if users_in_room[nickname].thisRoom == '':
@@ -215,16 +217,16 @@ def recieve():
         client, address = server.accept()
         print(f'connected with {str(address)}\n')
         print(client)
-        client.send(Helper.NICKNAME_CODE.encode('utf-8'))
-        nickname = client.recv(Helper.BUFFER_SIZE).decode('utf-8')
+        client.send(Constants.NICKNAME_CODE.encode('utf-8'))
+        nickname = client.recv(Constants.BUFFER_SIZE).decode('utf-8')
         nicknames.append(nickname)
         clients.append(client)
-        user = User(nickname)
-        users_in_room[nickname] = user
+        user_obj = User(nickname)
+        users_in_room[nickname] = user_obj
         users[nickname] = client
         print(f'Nickname of the client is {nickname}\n')
         client.send('\nYAY! Connected to the server!\n'.encode('utf-8'))
-        client.send(Helper.MENU_LIST.encode('utf-8'))
+        client.send(Constants.MENU_LIST.encode('utf-8'))
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
 
