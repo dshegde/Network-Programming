@@ -3,6 +3,8 @@
 from main import *
 from helper import *
 import threading
+import sys
+import signal
 
 # this function is to instatiate by creating objects
 
@@ -212,6 +214,11 @@ def handle(client):
 # main
 
 
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
+
+
 def recieve():
     while True:
         client, address = server.accept()
@@ -229,6 +236,8 @@ def recieve():
         client.send(Constants.MENU_LIST.encode('utf-8'))
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
+        if (signal.signal(signal.SIGINT, signal_handler)):
+            signal.pause()
 
 
 print('Server is listening...')

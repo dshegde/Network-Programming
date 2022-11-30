@@ -30,11 +30,11 @@ def receive():
             elif message == Constants.NICKNAME_CODE:
                 client.send(nickname.encode('utf-8'))
             elif message == Constants.EXIT_CODE:
-                print('Are you sure you want to exit chat application?')
                 client.send('Client is exiting'.encode('utf-8'))
-                client.shutdown(socket.SHUT_RDWR)
                 client.close()
-                sys.exit()
+                print('Type \'exit\' again to confirm')
+                client.shutdown(socket.SHUT_RDWR)
+                exit()
             else:
                 print(message)
         except Exception as e:
