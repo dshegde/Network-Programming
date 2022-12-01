@@ -1,34 +1,34 @@
-import threading  # for multiple process
 import socket
 import sys
-import configparser
-from helper import *
+import threading  # for multiple process
 
-configObj = configparser.ConfigParser()
-configObj.read('app_config_file.ini')
-nwConnection = configObj['Network Connection']
+import constants
+
+from connection import Connection
+
+
+conn_obj = Connection('app_config_file.ini')
 nickname = input("Enter your nickname: ")
 threads = []
+
 # To start the connection
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# connect_ex does not raise an exception, instead it returns an error code
-client.connect_ex((nwConnection['HOST'], int(nwConnection['PORT'])))
-
-
-'''This function is to recieve and send messages from the server'''
+# TODO: connect_ex does not raise an exception, instead it returns an error code
+client.connect_ex((conn_obj.get_host(), conn_obj.get_port()))
 
 
 def receive():
+    """This function is to recieve and send messages from the server"""
     while True:
         try:
-            message = client.recv(Constants.BUFFER_SIZE).decode('utf-8')
+            message = client.recv(constants.BUFFER_SIZE).decode('utf-8')
             if not message:
-                print("Connection to the server is lost. Exiting!!")
+                print("Connection to the server is lost... Exiting!!")
                 client.close()
                 sys.exit()
-            elif message == Constants.NICKNAME_CODE:
+            elif message == constants.NICKNAME_CODE:
                 client.send(nickname.encode('utf-8'))
-            elif message == Constants.EXIT_CODE:
+            elif message == constants.EXIT_CODE:
                 client.send('Client is exiting'.encode('utf-8'))
                 client.close()
                 print('Type \'exit\' again to confirm')
@@ -42,6 +42,7 @@ def receive():
 
 
 def write():
+    """This function is to write to the server"""
     while True:
         message = '{} {}'.format(nickname, input(''))
         try:
