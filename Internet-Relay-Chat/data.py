@@ -11,7 +11,7 @@ MENU_LIST = '\nApplication Menu:\n' \
     '7.personal name message - like "personal nickname hello" (sends personal message)\n' \
     '8.exit (exits the client app)\n'
 
-# Creating lists and ictionaried for data storage
+# Creating lists and dictionaries for data storage
 clients = []
 nicknames = []
 room_details = {}

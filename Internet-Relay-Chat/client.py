@@ -2,7 +2,7 @@ import socket
 import sys
 import threading  # for multiple process
 
-import constants
+import data
 
 from connection import Connection
 
@@ -21,14 +21,14 @@ def receive():
     """This function is to recieve and send messages from the server"""
     while True:
         try:
-            message = client.recv(constants.BUFFER_SIZE).decode('utf-8')
+            message = client.recv(data.BUFFER_SIZE).decode('utf-8')
             if not message:
                 print("Connection to the server is lost... Exiting!!")
                 client.close()
                 sys.exit()
-            elif message == constants.NICKNAME_CODE:
+            elif message == data.NICKNAME_CODE:
                 client.send(nickname.encode('utf-8'))
-            elif message == constants.EXIT_CODE:
+            elif message == data.EXIT_CODE:
                 client.send('Client is exiting'.encode('utf-8'))
                 client.close()
                 print('Type \'exit\' again to confirm')

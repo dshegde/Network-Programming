@@ -1,6 +1,6 @@
 import socket
 
-import constants
+import data
 
 from connection import Connection
 
@@ -22,6 +22,6 @@ server.listen()  # now it is in listening mode
 
 def broadcast(message, roomname):
     """This function is to broadcast the message to all the clients and server available in the network connection"""
-    for client in constants.room_details[roomname].people:
+    for client in data.room_details[roomname].people:
         msg = '['+roomname+'] '+message
         client.send(msg.encode('utf-8'))

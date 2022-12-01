@@ -1,6 +1,6 @@
 import threading
 
-import constants
+import data
 
 from main import *
 
@@ -20,25 +20,25 @@ class Room:
 
 
 def list_all_room_details(nickname):
-    name = constants.users[nickname]
-    if len(constants.room_details) == 0:
+    name = data.users[nickname]
+    if len(data.room_details) == 0:
         name.send('No rooms available\n'.encode('utf-8'))
     else:
         reply = "List of available room_details: \n"
         name.send(f'{reply}'.encode('utf-8'))
-        for room in constants.room_details:
-            name.send(f'{constants.room_details[room].name}\n'.encode('utf-8'))
+        for room in data.room_details:
+            name.send(f'{data.room_details[room].name}\n'.encode('utf-8'))
 
 
 def create_room(nickname, room_name):
-    name = constants.users[nickname]
-    user = constants.users_in_room[nickname]
+    name = data.users[nickname]
+    user = data.users_in_room[nickname]
     if not room_name:
         name.send(
             'Enter a roomname! you have not entered a roomname\n'.encode('utf-8'))
-    elif room_name not in constants.room_details:
+    elif room_name not in data.room_details:
         room_obj = Room(room_name)
-        constants.room_details[room_name] = room_obj
+        data.room_details[room_name] = room_obj
         room_obj.people.append(name)
         room_obj.nicknames.append(nickname)
         user.this_room = room_name
@@ -51,14 +51,14 @@ def create_room(nickname, room_name):
 
 
 def join_room(nickname, room_name):
-    name = constants.users[nickname]
-    user = constants.users_in_room[nickname]
-    print(len(constants.room_details))
-    if len(constants.room_details) == 0:
+    name = data.users[nickname]
+    user = data.users_in_room[nickname]
+    print(len(data.room_details))
+    if len(data.room_details) == 0:
         name.send(
             'No rooms are available to join. Create a room first!\n'.encode('utf-8'))
     else:
-        room = constants.room_details[room_name]
+        room = data.room_details[room_name]
         if room_name in user.room_details:
             name.send('You are already in the room\n'.encode('utf-8'))
         else:
@@ -72,21 +72,21 @@ def join_room(nickname, room_name):
 def personal_message(message):
     args = message.split(" ")
     user = args[2]
-    sender = constants.users[args[0]]
+    sender = data.users[args[0]]
     sender.send('entered personal message function'.encode('utf-8'))
-    if user not in constants.users:
+    if user not in data.users:
         sender.send('User not found\n'.encode('utf-8'))
     else:
-        reciever = constants.users[user]
+        reciever = data.users[user]
         msg = ' '.join(args[3:])
         reciever.send(f'[personal message] {args[0]}: {msg}'.encode('utf-8'))
         sender.send(f'[personal message] {args[0]}: {msg}'.encode('utf-8'))
 
 
 def switch_room(nickname, roomname):
-    user = constants.users_in_room[nickname]
-    name = constants.users[nickname]
-    room = constants.room_details[roomname]
+    user = data.users_in_room[nickname]
+    name = data.users[nickname]
+    room = data.room_details[roomname]
     if roomname == user.this_room:
         name.send(
             'You are already in the room, choose another available room to change\n'.encode('utf-8'))
@@ -99,26 +99,26 @@ def switch_room(nickname, roomname):
 
 
 def leave_room(nickname):
-    user = constants.users_in_room[nickname]
-    name = constants.users[nickname]
+    user = data.users_in_room[nickname]
+    name = data.users[nickname]
     print(name)
     if user.this_room == '':
         name.send('You are not part of any room\n'.encode('utf-8'))
     else:
         roomname = user.this_room
-        room = constants.room_details[roomname]
+        room = data.room_details[roomname]
         user.this_room = ''
         user.room_details.remove(room)
-        constants.room_details[roomname].people.remove(name)
-        constants.room_details[roomname].nicknames.remove(nickname)
+        data.room_details[roomname].people.remove(name)
+        data.room_details[roomname].nicknames.remove(nickname)
         broadcast(f'{nickname} left the room\n', roomname)
         name.send('You left the room\n'.encode('utf-8'))
 
 
 def remove_client(nickname):
-    constants.nicknames.remove(nickname)
-    client = constants.users[nickname]
-    user = constants.users_in_room[nickname]
+    data.nicknames.remove(nickname)
+    client = data.users[nickname]
+    user = data.users_in_room[nickname]
     user.this_room = ''
     for room in user.room_details:
         print(room.name)
@@ -133,12 +133,12 @@ def handle(client):
     nickname = ''
     while True:
         try:
-            message = client.recv(constants.BUFFER_SIZE).decode('utf-8')
+            message = client.recv(data.BUFFER_SIZE).decode('utf-8')
             args = message.split(" ")
-            name = constants.users[args[0]]
+            name = data.users[args[0]]
             nickname = args[0]
             if 'menu' in message:
-                name.send(constants.MENU_LIST.encode('utf-8'))
+                name.send(data.MENU_LIST.encode('utf-8'))
             elif 'list' in message:
                 list_all_room_details(args[0])
             elif 'create' in message:
@@ -154,20 +154,20 @@ def handle(client):
             elif 'exit' in message:
                 remove_client(nickname)
                 name.send('EXIT'.encode('utf-8'))
-                print(client.recv(constants.BUFFER_SIZE).decode('utf-8'))
+                print(client.recv(data.BUFFER_SIZE).decode('utf-8'))
             else:
-                if constants.users_in_room[nickname].this_room == '':
+                if data.users_in_room[nickname].this_room == '':
                     name.send('You are not part of any room\n'.encode('utf-8'))
                 else:
                     msg = ' '.join(args[1:])
                     broadcast(f'{nickname}: {msg}',
-                              constants.users_in_room[nickname].this_room)
+                              data.users_in_room[nickname].this_room)
 
         except Exception as e:
-            constants.clients.remove(client)
+            data.clients.remove(client)
             client.close()
             print(f'Client - {nickname} left')
-            if nickname in constants.nicknames:
+            if nickname in data.nicknames:
                 remove_client(nickname)
             break
 
@@ -183,16 +183,16 @@ def recieve():
         client, address = server.accept()
         print(f'connected with {str(address)}\n')
         print(client)
-        client.send(constants.NICKNAME_CODE.encode('utf-8'))
-        nickname = client.recv(constants.BUFFER_SIZE).decode('utf-8')
-        constants.nicknames.append(nickname)
-        constants.clients.append(client)
+        client.send(data.NICKNAME_CODE.encode('utf-8'))
+        nickname = client.recv(data.BUFFER_SIZE).decode('utf-8')
+        data.nicknames.append(nickname)
+        data.clients.append(client)
         user_obj = User(nickname)
-        constants.users_in_room[nickname] = user_obj
-        constants.users[nickname] = client
+        data.users_in_room[nickname] = user_obj
+        data.users[nickname] = client
         print(f'Nickname of the client is {nickname}\n')
         client.send('\nYAY! Connected to the server!\n'.encode('utf-8'))
-        client.send(constants.MENU_LIST.encode('utf-8'))
+        client.send(data.MENU_LIST.encode('utf-8'))
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
         # TODO: capture Ctrl C keyboard interrupt
