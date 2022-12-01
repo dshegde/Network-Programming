@@ -24,7 +24,6 @@ def receive():
             message = client.recv(Constants.BUFFER_SIZE).decode('utf-8')
             if not message:
                 print("Connection to the server is lost. Exiting!!")
-                client.shutdown(socket.SHUT_RDWR)
                 client.close()
                 sys.exit()
             elif message == Constants.NICKNAME_CODE:
@@ -33,12 +32,11 @@ def receive():
                 client.send('Client is exiting'.encode('utf-8'))
                 client.close()
                 print('Type \'exit\' again to confirm')
-                client.shutdown(socket.SHUT_RDWR)
-                exit()
+                sys.exit(0)
             else:
                 print(message)
         except Exception as e:
-            print('Server not responding')
+            print('An exception occured at the CLIENT side')
             client.close()
             sys.exit()
 

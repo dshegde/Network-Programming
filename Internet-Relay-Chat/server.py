@@ -215,7 +215,7 @@ def handle(client):
 
 
 def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!')
+    print('\n -------- Stopping Server --------')
     sys.exit(0)
 
 
