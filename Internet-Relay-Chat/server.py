@@ -53,7 +53,6 @@ def create_room(nickname, room_name):
 def join_room(nickname, room_name):
     name = data.users[nickname]
     user = data.users_in_room[nickname]
-    print(len(data.room_details))
     if len(data.room_details) == 0:
         name.send(
             'No rooms are available to join. Create a room first!\n'.encode('utf-8'))
@@ -157,7 +156,7 @@ def handle(client):
                 print(client.recv(data.BUFFER_SIZE).decode('utf-8'))
             else:
                 if data.users_in_room[nickname].this_room == '':
-                    name.send('You are not part of any room\n'.encode('utf-8'))
+                    name.send('Wrong command!\n'.encode('utf-8'))
                 else:
                     msg = ' '.join(args[1:])
                     broadcast(f'{nickname}: {msg}',
