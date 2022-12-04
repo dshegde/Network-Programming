@@ -82,19 +82,19 @@ def personal_message(message):
         sender.send(f'[personal message] {args[0]}: {msg}'.encode('utf-8'))
 
 
-def switch_room(nickname, roomname):
+def switch_room(nickname, room_name):
     user = data.users_in_room[nickname]
     name = data.users[nickname]
-    room = data.room_details[roomname]
-    if roomname == user.this_room:
+    room = data.room_details[room_name]
+    if room_name == user.this_room:
         name.send(
             'You are already in the room, choose another available room to change\n'.encode('utf-8'))
     elif room not in user.room_details:
         name.send(
             'Change of room not available, you are not part of the room\n'.encode('utf-8'))
     else:
-        user.this_room = roomname
-        name.send(f'Switched to {roomname}\n'.encode('utf-8'))
+        user.this_room = room_name
+        name.send(f'Switched to {room_name}\n'.encode('utf-8'))
 
 
 def leave_room(nickname):
@@ -104,13 +104,13 @@ def leave_room(nickname):
     if user.this_room == '':
         name.send('You are not part of any room\n'.encode('utf-8'))
     else:
-        roomname = user.this_room
-        room = data.room_details[roomname]
+        room_name = user.this_room
+        room = data.room_details[room_name]
         user.this_room = ''
         user.room_details.remove(room)
-        data.room_details[roomname].people.remove(name)
-        data.room_details[roomname].nicknames.remove(nickname)
-        broadcast(f'{nickname} left the room\n', roomname)
+        data.room_details[room_name].people.remove(name)
+        data.room_details[room_name].nicknames.remove(nickname)
+        broadcast(f'{nickname} left the room\n', room_name)
         name.send('You left the room\n'.encode('utf-8'))
 
 
