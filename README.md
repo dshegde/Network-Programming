@@ -21,7 +21,10 @@ Our motive is to learn and implement as many features as possible to accomplish 
 
 ## How to Run
 
-Download the repository, Open a terminal for the server and as many terminals required for as many clients. <br /> <br />
+Download the repository <br /> <br />
+Run the `requirements.txt` as shown below with the environment name of your choice<br /> <br />
+`conda create --name <env> --file requirements.txt` <br /> <br />
+Open a terminal for the server and as many terminals required for as many clients. <br /> <br />
 Start the server <br /> <br />
 `python server.py` <br /> <br />
 Once the server is running, start the client <br /> <br />
