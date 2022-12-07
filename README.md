@@ -24,6 +24,8 @@ Our motive is to learn and implement as many features as possible to accomplish 
 Download the repository <br /> <br />
 Run the `requirements.txt` as shown below with the environment name of your choice<br /> <br />
 `conda create --name <env> --file requirements.txt` <br /> <br />
+Run the `app_config_file_generator.py` to generate the app_config_file.ini file <br /> <br />
+`python app_config_file_generator.py`<br /> <br />
 Open a terminal for the server and as many terminals required for as many clients. <br /> <br />
 Start the server <br /> <br />
 `python server.py` <br /> <br />
