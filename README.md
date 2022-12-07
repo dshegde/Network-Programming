@@ -30,6 +30,11 @@ Start the server <br /> <br />
 Once the server is running, start the client <br /> <br />
 `python client.py` <br /> <br />
 
+## Sample screenshots for running the application
+
+<img src="Images/readme_server.png" width="500"><br /> <br /><br /> <br />
+<img src="Images/readme_client.png" width="500"><br /> <br />
+
 ## Reference
 
 * [TCP chat in python](https://www.neuralnine.com/tcp-chat-in-python/)
